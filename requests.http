@@ -1,0 +1,155 @@
+### ── Variables ──────────────────────────────────────────────
+@baseUrl = http://localhost:3000/api/user
+@accessToken = <paste-access-token-here>
+@refreshToken = <paste-refresh-token-here>
+
+### ═══════════════════════════════════════════════════════════
+### 1) Register a new user
+### ═══════════════════════════════════════════════════════════
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "password123"
+}
+
+### ═══════════════════════════════════════════════════════════
+### 2) Validate email (use code from DB or server log)
+### ═══════════════════════════════════════════════════════════
+PUT {{baseUrl}}/validation
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "code": "123456"
+}
+
+### ═══════════════════════════════════════════════════════════
+### 3) Login
+### ═══════════════════════════════════════════════════════════
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "password123"
+}
+
+### ═══════════════════════════════════════════════════════════
+### 4a) Onboarding — personal data
+### ═══════════════════════════════════════════════════════════
+PUT {{baseUrl}}/register
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Sam",
+  "lastName": "García",
+  "nif": "12345678A"
+}
+
+### ═══════════════════════════════════════════════════════════
+### 4b) Onboarding — company (non-freelance)
+### ═══════════════════════════════════════════════════════════
+PATCH {{baseUrl}}/company
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "isFreelance": false,
+  "name": "Acme Corp",
+  "cif": "B12345678",
+  "address": {
+    "street": "Calle Mayor",
+    "number": "10",
+    "postal": "28001",
+    "city": "Madrid",
+    "province": "Madrid"
+  }
+}
+
+### ═══════════════════════════════════════════════════════════
+### 4b-alt) Onboarding — company (freelance)
+### ═══════════════════════════════════════════════════════════
+PATCH {{baseUrl}}/company
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "isFreelance": true
+}
+
+### ═══════════════════════════════════════════════════════════
+### 5) Upload company logo
+### ═══════════════════════════════════════════════════════════
+PATCH {{baseUrl}}/logo
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----FormBoundary
+
+------FormBoundary
+Content-Disposition: form-data; name="logo"; filename="logo.png"
+Content-Type: image/png
+
+< ./uploads/.gitkeep
+------FormBoundary--
+
+### ═══════════════════════════════════════════════════════════
+### 6) Get current user (with populated company)
+### ═══════════════════════════════════════════════════════════
+GET {{baseUrl}}
+Authorization: Bearer {{accessToken}}
+
+### ═══════════════════════════════════════════════════════════
+### 7a) Refresh token
+### ═══════════════════════════════════════════════════════════
+POST {{baseUrl}}/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### ═══════════════════════════════════════════════════════════
+### 7b) Logout
+### ═══════════════════════════════════════════════════════════
+POST {{baseUrl}}/logout
+Authorization: Bearer {{accessToken}}
+
+### ═══════════════════════════════════════════════════════════
+### 8) Delete user (soft)
+### ═══════════════════════════════════════════════════════════
+DELETE {{baseUrl}}?soft=true
+Authorization: Bearer {{accessToken}}
+
+### ═══════════════════════════════════════════════════════════
+### 8-alt) Delete user (hard)
+### ═══════════════════════════════════════════════════════════
+DELETE {{baseUrl}}
+Authorization: Bearer {{accessToken}}
+
+### ═══════════════════════════════════════════════════════════
+### 9) Change password
+### ═══════════════════════════════════════════════════════════
+PUT {{baseUrl}}/password
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "currentPassword": "password123",
+  "newPassword": "newpassword456"
+}
+
+### ═══════════════════════════════════════════════════════════
+### 10) Invite a colleague (admin only)
+### ═══════════════════════════════════════════════════════════
+POST {{baseUrl}}/invite
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "email": "colleague@test.com",
+  "name": "María",
+  "lastName": "López",
+  "password": "guestpass123"
+}
