@@ -1,0 +1,55 @@
+@baseUrl = http://localhost:3000
+@token = PASTE_ACCESS_TOKEN_HERE
+@clientId = PASTE_CLIENT_ID
+
+### Create client
+POST {{baseUrl}}/api/client
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Cliente SL",
+  "cif": "B12345678",
+  "email": "cliente@example.com",
+  "phone": "600000000",
+  "address": {
+    "street": "Gran Vía",
+    "number": "1",
+    "postal": "28013",
+    "city": "Madrid",
+    "province": "Madrid"
+  }
+}
+
+### List clients
+GET {{baseUrl}}/api/client?page=1&limit=10&name=Cli&sort=-createdAt
+Authorization: Bearer {{token}}
+
+### Get client by id
+GET {{baseUrl}}/api/client/{{clientId}}
+Authorization: Bearer {{token}}
+
+### Update client
+PUT {{baseUrl}}/api/client/{{clientId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Cliente Updated"
+}
+
+### Archive (soft delete)
+DELETE {{baseUrl}}/api/client/{{clientId}}?soft=true
+Authorization: Bearer {{token}}
+
+### List archived
+GET {{baseUrl}}/api/client/archived?page=1&limit=10
+Authorization: Bearer {{token}}
+
+### Restore
+PATCH {{baseUrl}}/api/client/{{clientId}}/restore
+Authorization: Bearer {{token}}
+
+### Hard delete
+DELETE {{baseUrl}}/api/client/{{clientId}}
+Authorization: Bearer {{token}}

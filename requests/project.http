@@ -1,0 +1,58 @@
+@baseUrl = http://localhost:3000
+@token = PASTE_ACCESS_TOKEN_HERE
+@clientId = PASTE_CLIENT_OBJECT_ID
+@projectId = PASTE_PROJECT_ID
+
+### Create project
+POST {{baseUrl}}/api/project
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "client": "{{clientId}}",
+  "name": "Reforma local",
+  "projectCode": "PRJ-2026-01",
+  "address": {
+    "street": "Gran Vía",
+    "number": "1",
+    "postal": "28013",
+    "city": "Madrid",
+    "province": "Madrid"
+  },
+  "email": "obra@example.com",
+  "notes": "Urgente",
+  "active": true
+}
+
+### List projects
+GET {{baseUrl}}/api/project?page=1&limit=10&client={{clientId}}&name=Re&active=true&sort=-createdAt
+Authorization: Bearer {{token}}
+
+### Get project
+GET {{baseUrl}}/api/project/{{projectId}}
+Authorization: Bearer {{token}}
+
+### Update project
+PUT {{baseUrl}}/api/project/{{projectId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "notes": "Updated"
+}
+
+### Archive project
+DELETE {{baseUrl}}/api/project/{{projectId}}?soft=true
+Authorization: Bearer {{token}}
+
+### List archived projects
+GET {{baseUrl}}/api/project/archived?page=1&limit=10
+Authorization: Bearer {{token}}
+
+### Restore project
+PATCH {{baseUrl}}/api/project/{{projectId}}/restore
+Authorization: Bearer {{token}}
+
+### Hard delete project
+DELETE {{baseUrl}}/api/project/{{projectId}}
+Authorization: Bearer {{token}}

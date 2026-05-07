@@ -1,0 +1,130 @@
+# VS Code REST Client — set folder variables or replace {{baseUrl}} / {{token}}
+@baseUrl = http://localhost:3000
+@token = PASTE_ACCESS_TOKEN_HERE
+
+### Register
+POST {{baseUrl}}/api/user/register
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "password123"
+}
+
+### Validate email (use code from email, dev log, or DB)
+PUT {{baseUrl}}/api/user/validation
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "code": "123456"
+}
+
+### Login
+POST {{baseUrl}}/api/user/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "password123"
+}
+
+### Onboarding — personal (PUT /api/user/register)
+PUT {{baseUrl}}/api/user/register
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Sam",
+  "lastName": "García",
+  "nif": "12345678A",
+  "address": {
+    "street": "Calle Mayor",
+    "number": "10",
+    "postal": "28001",
+    "city": "Madrid",
+    "province": "Madrid"
+  }
+}
+
+### Onboarding — company (business)
+PATCH {{baseUrl}}/api/user/company
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "isFreelance": false,
+  "name": "Acme Corp",
+  "cif": "B12345678",
+  "address": {
+    "street": "Calle Mayor",
+    "number": "10",
+    "postal": "28001",
+    "city": "Madrid",
+    "province": "Madrid"
+  }
+}
+
+### Onboarding — company (freelance)
+PATCH {{baseUrl}}/api/user/company
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "isFreelance": true
+}
+
+### Upload company logo (image file)
+PATCH {{baseUrl}}/api/user/logo
+Authorization: Bearer {{token}}
+
+# form field name: logo — attach file in REST Client UI
+
+### Get current user
+GET {{baseUrl}}/api/user
+Authorization: Bearer {{token}}
+
+### Refresh tokens
+POST {{baseUrl}}/api/user/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "PASTE_REFRESH_TOKEN_HERE"
+}
+
+### Logout
+POST {{baseUrl}}/api/user/logout
+Authorization: Bearer {{token}}
+
+### Change password
+PUT {{baseUrl}}/api/user/password
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "currentPassword": "password123",
+  "newPassword": "newpassword456"
+}
+
+### Invite (admin only)
+POST {{baseUrl}}/api/user/invite
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "email": "colleague@test.com",
+  "name": "María",
+  "lastName": "López",
+  "password": "guestpass123"
+}
+
+### Delete user (soft)
+DELETE {{baseUrl}}/api/user?soft=true
+Authorization: Bearer {{token}}
+
+### Delete user (hard)
+DELETE {{baseUrl}}/api/user
+Authorization: Bearer {{token}}
+
+### Root
+GET {{baseUrl}}/

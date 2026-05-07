@@ -1,4 +1,5 @@
 import { AppError } from "../utils/AppError.js";
+import { notifySlackServerError } from "../services/logger.service.js";
 
 export const errorHandler = (err, req, res, next) => {
   if (err instanceof AppError) {
@@ -6,7 +7,19 @@ export const errorHandler = (err, req, res, next) => {
   }
 
   if (err?.code === 11000) {
-    return res.status(409).json({ error: "Email already in use" });
+    const keys = err.keyPattern ? Object.keys(err.keyPattern) : [];
+    let message = "Duplicate entry";
+    if (keys.includes("email")) {
+      message = "Email already in use";
+    } else if (
+      keys.includes("cif") ||
+      keys.includes("projectCode") ||
+      keys.includes("company")
+    ) {
+      message =
+        "A record with this unique field already exists for your company";
+    }
+    return res.status(409).json({ error: message });
   }
 
   if (err.name === "MulterError") {
@@ -18,5 +31,10 @@ export const errorHandler = (err, req, res, next) => {
   }
 
   console.error(err);
+
+  void notifySlackServerError(err, req).catch((e) => {
+    console.error("notifySlackServerError:", e);
+  });
+
   res.status(500).json({ error: "Internal server error" });
 };

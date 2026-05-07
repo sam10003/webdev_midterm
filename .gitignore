@@ -1,6 +1,9 @@
 node_modules/
+coverage/
 .env
 uploads/*
 !uploads/.gitkeep
+!uploads/pdfs/
+!uploads/pdfs/.gitkeep
 *.log
 INSTRUCTIONS.md

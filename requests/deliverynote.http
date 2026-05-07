@@ -1,0 +1,64 @@
+@baseUrl = http://localhost:3000
+@token = PASTE_ACCESS_TOKEN_HERE
+@clientId = PASTE_CLIENT_ID
+@projectId = PASTE_PROJECT_ID
+@noteId = PASTE_NOTE_ID
+
+### Create delivery note (material)
+POST {{baseUrl}}/api/deliverynote
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "client": "{{clientId}}",
+  "project": "{{projectId}}",
+  "format": "material",
+  "description": "Entrega de arena",
+  "workDate": "2026-05-07T10:00:00.000Z",
+  "material": "Arena",
+  "quantity": 5,
+  "unit": "m3"
+}
+
+### Create delivery note (hours + workers)
+POST {{baseUrl}}/api/deliverynote
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "client": "{{clientId}}",
+  "project": "{{projectId}}",
+  "format": "hours",
+  "description": "Montaje",
+  "workDate": "2026-05-07T14:00:00.000Z",
+  "hours": 6,
+  "workers": [
+    { "name": "Ana", "hours": 4 },
+    { "name": "Luis", "hours": 2 }
+  ]
+}
+
+### List delivery notes
+GET {{baseUrl}}/api/deliverynote?page=1&limit=10&project={{projectId}}&client={{clientId}}&format=material&signed=false&from=2026-01-01&to=2026-12-31&sort=-workDate
+Authorization: Bearer {{token}}
+
+### Get by id (populated)
+GET {{baseUrl}}/api/deliverynote/{{noteId}}
+Authorization: Bearer {{token}}
+
+### Download PDF
+GET {{baseUrl}}/api/deliverynote/pdf/{{noteId}}
+Authorization: Bearer {{token}}
+
+### Sign (data URL or raw base64)
+PATCH {{baseUrl}}/api/deliverynote/{{noteId}}/sign
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "signatureData": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+}
+
+### Delete (unsigned only)
+DELETE {{baseUrl}}/api/deliverynote/{{noteId}}
+Authorization: Bearer {{token}}

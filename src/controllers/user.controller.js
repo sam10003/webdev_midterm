@@ -5,6 +5,7 @@ import Company from "../models/Company.js";
 import config from "../config/index.js";
 import { AppError } from "../utils/AppError.js";
 import notifier from "../services/notification.service.js";
+import { sendVerificationCode } from "../services/mail.service.js";
 
 const SALT_ROUNDS = 10;
 
@@ -22,6 +23,23 @@ const generateTokens = (user) => {
 const randomCode = () =>
   String(Math.floor(100000 + Math.random() * 900000));
 
+/** Console fallback when SMTP is missing or send fails (development or LOG_VERIFICATION_CODE). */
+function logVerificationCodeIfDebug(email, code, mailResult) {
+  const dev = config.nodeEnv === "development";
+  const explicit = config.logVerificationCode;
+  if (!dev && !explicit) return;
+  if (mailResult?.ok) {
+    if (explicit) {
+      console.log(`[mail] Verification code for ${email}: ${code}`);
+    }
+    return;
+  }
+  const why = mailResult?.reason || "unknown";
+  console.warn(
+    `[mail] Verification email not sent (${why}). Code for ${email}: ${code}`
+  );
+}
+
 // ── 1) Register ──────────────────────────────────────────────
 export const register = async (req, res) => {
   const { email, password } = req.body;
@@ -38,6 +56,9 @@ export const register = async (req, res) => {
     verificationCode: code,
     verificationAttempts: 3,
   });
+
+  const mailResult = await sendVerificationCode({ to: email, code });
+  logVerificationCodeIfDebug(email, code, mailResult);
 
   const { accessToken, refreshToken } = generateTokens(user);
   user.refreshToken = refreshToken;
@@ -231,7 +252,7 @@ export const refreshToken = async (req, res) => {
   }
 
   const user = await User.findById(payload._id);
-  if (!user || user.refreshToken !== token) {
+  if (!user || user.deleted || user.refreshToken !== token) {
     throw AppError.unauthorized("Invalid refresh token");
   }
 

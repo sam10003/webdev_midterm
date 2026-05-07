@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { addressSchema } from "./schemas.js";
 
 export const registerSchema = z.object({
   email: z
@@ -8,20 +9,17 @@ export const registerSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
-
-
+export const loginSchema = z.object({
+  email: z
+    .string()
+    .email("Invalid email")
+    .transform((v) => v.toLowerCase().trim()),
+  password: z.string().min(1, "Password is required"),
+});
 
 
 export const validationSchema = z.object({
   code: z.string().regex(/^\d{6}$/, "Code must be exactly 6 digits"),
-});
-
-const addressSchema = z.object({
-  street: z.string().min(1).transform((v) => v.trim()),
-  number: z.string().min(1).transform((v) => v.trim()),
-  postal: z.string().min(1).transform((v) => v.trim()),
-  city: z.string().min(1).transform((v) => v.trim()),
-  province: z.string().min(1).transform((v) => v.trim()),
 });
 
 export const onboardingPersonalSchema = z.object({
@@ -43,7 +41,7 @@ export const companySchema = z.discriminatedUnion("isFreelance", [
     address: addressSchema,
   }),
 ]);
-
+ 
 export const passwordSchema = z
   .object({
     currentPassword: z.string().min(1, "Current password is required"),
